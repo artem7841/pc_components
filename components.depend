@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1713598463 source:c:\users\zubko\desktop\c++_projects\components\main.cpp
+	<iostream>
+	"head.h"
+
+1713607382 c:\users\zubko\desktop\c++_projects\components\head.h
+
