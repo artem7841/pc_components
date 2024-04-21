@@ -34,6 +34,7 @@
 		</Compiler>
 		<Unit filename="head.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="patterns.h" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>

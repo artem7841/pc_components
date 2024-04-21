@@ -1,7 +1,14 @@
 # depslib dependency file v1.0
-1713598463 source:c:\users\zubko\desktop\c++_projects\components\main.cpp
+1713700254 source:c:\users\zubko\desktop\c++_projects\components\main.cpp
 	<iostream>
+	<list>
+	<vector>
 	"head.h"
+	"patterns.h"
 
-1713607382 c:\users\zubko\desktop\c++_projects\components\head.h
+1713699806 c:\users\zubko\desktop\c++_projects\components\head.h
+	"patterns.h"
+	<cmath>
+
+1713609039 c:\users\zubko\desktop\c++_projects\components\patterns.h
 

@@ -5,10 +5,10 @@
 
 enum class ComponentType : int
 {
-    CPU = 3,
+    CPU = 4,
     GPU = 5,
     RAM = 1,
-    Motherboard = 2,
+    Motherboard = 3,
     Disk = 2,
     Unknown = 0
 };
@@ -28,10 +28,12 @@ protected:
     ComponentType Type;
     Component()
     {
+        Guarantee = getRandomNumber(1, 10) * 12;
        year = getRandomNumber(2000, 2024);
     };
 public:
     int GetGuarant() const {return Guarantee;}
+    int GetYear() const {return year;}
     virtual ComponentType GetType() const = 0;
     virtual int GetPrice() = 0;
     virtual void GetCharacteristics() = 0;
@@ -149,7 +151,7 @@ public:
 };
 
 
-// Iterator
+// Итераторы
 
 class ComponentContainerIterator : public Iterator<ComponentPtr>
 {
@@ -172,19 +174,64 @@ public:
     ComponentPtr GetCurrent() const { return ComponentBox[Pos]; }
 };
 
-//Container
+class VectorComponentContainerIterator : public Iterator<ComponentPtr>
+{
+private:
+    const vector<ComponentPtr> *ComponentBox;
+    vector<ComponentPtr>::const_iterator it;
+
+public:
+    VectorComponentContainerIterator(const vector<ComponentPtr> *componentBox)
+    {
+        ComponentBox = componentBox;
+        it = ComponentBox->begin();
+    }
+
+    void First() { it = ComponentBox->begin(); }
+    void Next() { it++; }
+    bool IsDone()  const { it ==ComponentBox->end(); }
+    ComponentPtr GetCurrent() const { return *it; }
+};
+
+
+
+//Контейнеры
 
 class ComponentContainer
 {
 private:
-    ComponentPtr *ComponentBox; // указатель на указатель на фрукт
+    ComponentPtr *ComponentBox;
     int ComponentCount;
     int MaxSize;
 
 public:
-    ComponentContainer(int maxSize);
-    virtual ~ComponentContainer();
-    void AddComponent(ComponentPtr newComponent);
+    ComponentContainer(int maxSize)
+    {
+        ComponentBox = new ComponentPtr[maxSize];
+        for(int i = 0; i < maxSize; i++)
+        {
+            ComponentBox[i] = NULL;
+        }
+        ComponentCount = 0;
+        MaxSize = maxSize;
+    };
+    virtual ~ComponentContainer()
+    {
+        for(int i = 0; i < MaxSize; i++)
+        {
+            if(ComponentBox[i] != NULL)
+            {
+                delete ComponentBox[i];
+                ComponentBox[i] = NULL;
+            }
+        }
+    delete [] ComponentBox;
+    };
+    void AddComponent(ComponentPtr newComponent)
+    {
+        ComponentBox[ComponentCount] = newComponent;
+        ComponentCount++;
+    };
     int GetCount() const { return ComponentCount; }
     ComponentPtr GetByIndex(int index) const { return ComponentBox[index]; }
 
@@ -194,43 +241,118 @@ public:
     }
 };
 
-/* class MegaComponentContainerIterator : public Iterator<ComponentPtr>
-{
-private:
-    const list<ComponentPtr> *ComponentBox;
-    list<ComponentPtr>::const_iterator it;
 
-public:
-    MegaComponentContainerIterator(const std::list<ComponentPtr> *componentBox)
-    {        ComponentBox = componentBox;
-        it = ComponentBox->begin();
-    }
 
-    void First() { it = ComponentBox->begin(); }
-    void Next() { it++; }
-    bool IsDone()  const { it !=ComponentBox->end(); }
-    ComponentPtr GetCurrent() const { return *it; }
-};
 
-class MegaComponentContainer
+class VectorComponentContainer
 {
 private:
     vector<ComponentPtr> ComponentBox;
-    list<ComponentPtr> ComponentBox;
 
 public:
     void AddComponent(ComponentPtr newComponent) { ComponentBox.push_back(newComponent); }
     int GetCount() const { return ComponentBox.size(); }
-    // FruitPtr GetByIndex(int index) const { return FruitBox[index]; }
 
     Iterator<ComponentPtr> *GetIterator()
     {
-        return new MegaComponentContainerIterator(&componentBox);
+        return new VectorComponentContainerIterator(&ComponentBox);
+    }
+};
+
+//1 декоратор по типу
+
+class ComponentTypeDecorator : public IteratorDecorator<ComponentPtr>
+{
+private:
+    ComponentType TargetType;
+public:
+    ComponentTypeDecorator(Iterator<ComponentPtr> *it, ComponentType tatgetType):IteratorDecorator(it)
+    {
+        TargetType = TargetType;
+    }
+    void First()
+    {
+        It->First();
+        while(!It->IsDone()&& It->GetCurrent()->GetType() != TargetType)
+        {
+            It->Next();
+        }
+    }
+
+    void Next()
+    {
+        do
+        {
+            It->Next();
+        } while(!It->IsDone() && It->GetCurrent()->GetType() != TargetType);
+    }
+};
+
+//2 Декоратор по временному отрезку
+
+class ComponentDataRangeDecorator : public IteratorDecorator<ComponentPtr>
+{
+private:
+    int DataStart;
+    int DataEnd;
+public:
+    ComponentDataRangeDecorator(Iterator<ComponentPtr> *it, int dataStart, int dataEnd)
+    :IteratorDecorator(it)
+    {
+        DataStart = dataStart;
+        DataEnd = dataEnd;
+    }
+    void First()
+    {
+        It->First();
+        while(!It->IsDone()&& (It->GetCurrent()->GetYear() <= DataStart-1) || (It->GetCurrent()->GetYear() >= DataEnd+1))
+        {
+            It->Next();
+        }
+    }
+
+    void Next()
+    {
+        do
+        {
+            It->Next();
+        } while(!It->IsDone()&& (It->GetCurrent()->GetYear() <= DataStart-1) || (It->GetCurrent()->GetYear() >= DataEnd+1));
+    }
+};
+
+//3 Декоратор по гарантии
+
+class ComponentGuarantDecorator : public IteratorDecorator<ComponentPtr>
+{
+private:
+    int Guarant;
+public:
+    ComponentGuarantDecorator(Iterator<ComponentPtr> *it, int guarant)
+    :IteratorDecorator(it)
+    {
+        Guarant = guarant;
+
+    }
+    void First()
+    {
+        It->First();
+        while(!It->IsDone()&& (It->GetCurrent()->GetGuarant() <= Guarant) )
+        {
+            It->Next();
+        }
+    }
+
+    void Next()
+    {
+        do
+        {
+            It->Next();
+        } while(!It->IsDone()&& (It->GetCurrent()->GetGuarant()) <= Guarant);
     }
 };
 
 
-*/
+
 
 
 #endif // HEAD_H_INCLUDED
