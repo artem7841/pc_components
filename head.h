@@ -13,13 +13,14 @@ enum class ComponentType : int
     Unknown = 0
 };
 
-
+//случайное число в диапазоне
 int getRandomNumber(int min, int max)
 {
     static const double fraction = 1.0 / (static_cast<double>(RAND_MAX) + 1.0);
     return min + static_cast<int>((max - min + 1) * (rand() * fraction));
 }
 
+// классы
 class Component
 {
 protected:
@@ -29,7 +30,7 @@ protected:
     Component()
     {
         Guarantee = getRandomNumber(1, 10) * 12;
-       year = getRandomNumber(2000, 2024);
+       year = getRandomNumber(2001, 2024);
     };
 public:
     int GetGuarant() const {return Guarantee;}
@@ -53,6 +54,7 @@ public:
         Type = ComponentType::CPU;
         Cores = getRandomNumber(2, 16);
         Threads = Cores * (getRandomNumber(1, 2));
+        Frequency = getRandomNumber(1200, 6400);
     }
     ComponentType GetType() const {return Type;}
     int GetPrice () { return Cores * Threads  * 100 * (year - 2000);}
@@ -121,7 +123,7 @@ public:
         Slots_RAM = getRandomNumber(1, 4) * 2;
     }
     ComponentType GetType() const {return Type;}
-    int GetPrice () { return Slots_RAM / 1000 * 100 * (year - 2000);}
+    int GetPrice () { return Slots_RAM * 1000;}
     void GetCharacteristics()
     {
         cout << "Slots RAM: " << Slots_RAM << endl;
@@ -138,11 +140,11 @@ public:
     Disk() : Component()
     {
         Type = ComponentType::Disk;
-        Memory =  pow(2, getRandomNumber(0, 6)) * 128 ;
+        Memory =  getRandomNumber(1, 6) * 128 ;
         Speed = getRandomNumber(1000, 4000);
     }
     ComponentType GetType() const {return Type;}
-    int GetPrice () { return Memory * Speed / 1000 * 100 * (year - 2000);}
+    int GetPrice () { return (Memory/128) * (Speed /100) * (year - 2000);}
     void GetCharacteristics()
     {
         cout << "Memory: " << Memory << endl;
@@ -350,8 +352,6 @@ public:
         } while(!It->IsDone()&& (It->GetCurrent()->GetGuarant()) <= Guarant);
     }
 };
-
-
 
 
 
