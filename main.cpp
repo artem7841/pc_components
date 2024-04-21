@@ -9,16 +9,16 @@ using namespace std;
 
 
 //возвращает строку названия
-wstring PrintComponentType(const ComponentType type)
+string PrintComponentType(const ComponentType type)
 {
     switch(type)
     {
-        case ComponentType::CPU: return L"CPU";
-        case ComponentType::GPU: return L"GPU";
-        case ComponentType::RAM: return L"RAM";
-        case ComponentType::Motherboard: return L"Motherboard";
-        case ComponentType::Disk: return L"Disk";
-        default: return L"unknow";
+        case ComponentType::CPU: return "CPU";
+        case ComponentType::GPU: return "GPU";
+        case ComponentType::RAM: return "RAM";
+        case ComponentType::Motherboard: return "Motherboard";
+        case ComponentType::Disk: return "Disk";
+        default: return "unknow";
     }
 }
 
@@ -43,7 +43,7 @@ void Task1(ComponentContainer *componentBox, int n)
        const ComponentPtr currentComponent = componentBox->GetByIndex(i);
         if(currentComponent->GetGuarant() >= n)
         {
-            wcout << i << L" (" << PrintComponentType(currentComponent->GetType()) << " guarantee: " << currentComponent->GetGuarant() << L" months)" << endl;
+            cout << i << " (" << PrintComponentType(currentComponent->GetType()) << " guarantee: " << currentComponent->GetGuarant() << " months)" << endl;
         }
     }
 
@@ -56,9 +56,9 @@ void Task2(Iterator<ComponentPtr> * Iterator)
 	for(Iterator->First(); !Iterator->IsDone(); Iterator->Next())
 	{
 		const ComponentPtr CurrentComponent = Iterator->GetCurrent();
-		wcout << PrintComponentType(CurrentComponent->GetType()) << endl;
+		cout << PrintComponentType(CurrentComponent->GetType()) << endl;
 		CurrentComponent->GetCharacteristics();
-		wcout << endl;
+		cout << endl;
         //CurrentComponent->GetCharacteristics();
 	}
 }
@@ -69,8 +69,8 @@ void Task3(Iterator<ComponentPtr> * Iterator)
 	for(Iterator->First(); !Iterator->IsDone(); Iterator->Next())
 	{
 		const ComponentPtr CurrentComponent = Iterator->GetCurrent();
-		wcout << PrintComponentType(CurrentComponent->GetType()) << " ";
-		wcout << CurrentComponent->GetPrice() << endl;
+		cout << PrintComponentType(CurrentComponent->GetType()) << " ";
+		cout << CurrentComponent->GetPrice() << " rub"<< endl;
         //CurrentComponent->GetCharacteristics();
 	}
 }
@@ -86,36 +86,38 @@ ComponentType GetRandomComponentType()
 
 
 
-
 int main()
 {
+    // рандомные числа
     int a = getRandomNumber(0, 1000);
     int b = getRandomNumber(0, 1000);
     int c = getRandomNumber(0, 1000);
 
-
+    // инициализация и заполнение фабричным метожом контейнера массив
     ComponentContainer array_container(b);
-    VectorComponentContainer vector_container;
     for(int i = 0; i < b; i++)
     {
         array_container.AddComponent(CreateComponent(GetRandomComponentType()));
     }
-    for(int i = 0; i < c; i++)
+
+    // инициализация и заполнение фабричным метожом контейнера вектора
+    VectorComponentContainer vector_container;
+    for(int i = 0; i < b; i++)
     {
         vector_container.AddComponent(CreateComponent(GetRandomComponentType()));
     }
 
-    Iterator<ComponentPtr> *clean_iterator = array_container.GetIterator();
-    Iterator<ComponentPtr> *It = new ComponentDataRangeDecorator(array_container.GetIterator(), 2007, 2022);
 
-    //Task1(&array_container, 56);
-    Task2(clean_iterator);
-    Task3(clean_iterator);
-    delete clean_iterator;
-    delete It;
+    Iterator<ComponentPtr> *It_guarant = new ComponentGuarantDecorator(array_container.GetIterator(), 45);
+    Iterator<ComponentPtr> *It_data = new ComponentDataRangeDecorator(array_container.GetIterator(), 2015, 2018);
 
+    Task1(&array_container, 56);
+    Task2(It_guarant);
+    Task3(It_data);
 
-    cout << "fgfg" << endl;
+    delete It_guarant;
+    delete It_data;
+
 
     return 0;
 }

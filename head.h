@@ -13,7 +13,7 @@ enum class ComponentType : int
     Unknown = 0
 };
 
-//случайное число в диапазоне
+//функция возвращает случайное число в диапазоне
 int getRandomNumber(int min, int max)
 {
     static const double fraction = 1.0 / (static_cast<double>(RAND_MAX) + 1.0);
@@ -191,13 +191,15 @@ public:
 
     void First() { it = ComponentBox->begin(); }
     void Next() { it++; }
-    bool IsDone()  const { it ==ComponentBox->end(); }
+    bool IsDone()  const { it == ComponentBox->end(); return true;}
     ComponentPtr GetCurrent() const { return *it; }
 };
 
 
 
 //Контейнеры
+
+//Контейнер массив
 
 class ComponentContainer
 {
@@ -219,15 +221,7 @@ public:
     };
     virtual ~ComponentContainer()
     {
-        for(int i = 0; i < MaxSize; i++)
-        {
-            if(ComponentBox[i] != NULL)
-            {
-                delete ComponentBox[i];
-                ComponentBox[i] = NULL;
-            }
-        }
-    delete [] ComponentBox;
+        delete [] ComponentBox;
     };
     void AddComponent(ComponentPtr newComponent)
     {
@@ -244,7 +238,7 @@ public:
 };
 
 
-
+//Контейнер вектор
 
 class VectorComponentContainer
 {
